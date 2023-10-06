@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace InnoGotchi
 {
@@ -17,7 +13,7 @@ namespace InnoGotchi
         public Mouth _mouth { get; set; } = Mouth.Medium;
         public string _name { get; set; } = "Unnamed";
 
-        private readonly DateTime _created = DateTime.Now;
+        public readonly DateTime _created = DateTime.Now;
         private DateTime _updated = DateTime.Now;
 
         public Hunger _hunger { get; private set; } = Hunger.Full;
@@ -40,24 +36,62 @@ namespace InnoGotchi
 
         public Pet(string line)
         {
+            string[] fields = line.Split(',');
 
+            _body = (Body)Enum.Parse(typeof(Body), fields[0]);
+            _eyes = (Eyes)Enum.Parse(typeof(Eyes), fields[1]);
+            _nose = (Nose)Enum.Parse(typeof(Nose), fields[2]);
+            _mouth = (Mouth)Enum.Parse(typeof(Mouth), fields[3]);
+
+            _name = fields[4];
+            _created = DateTime.Parse(fields[5]);
+            _updated = DateTime.Parse(fields[6]);
+
+            _hunger = (Hunger)Enum.Parse(typeof(Hunger), fields[7]);
+            _lastEatTime = DateTime.Parse(fields[8]);
+            _thirst = (Thirsty)Enum.Parse(typeof(Thirsty), fields[9]);
+            _lastDrinkTime = DateTime.Parse(fields[10]);
+
+            _happinessDaysCount = Int32.Parse(fields[11]);
+            _isDead = Boolean.Parse(fields[12]);
         }
-        //public override string ToString()
-        //{
-        
-        //}
+
+        public override string ToString()
+        {
+            StringBuilder pet = new StringBuilder(256);
+
+            object[] fields = new object[]
+            {
+                _body, _eyes, _nose, _mouth,
+                _name,
+                _created, _updated,
+                _hunger, _lastEatTime, _thirst, _lastDrinkTime,
+                _happinessDaysCount,
+                _isDead
+            };
+
+            foreach (var field in fields)
+            {
+                pet.Append(field);
+                pet.Append(',');
+            }
+
+            pet[^1] = '\n';
+            return pet.ToString();
+        }
         public void UpdateState()
         {
-            if (_isDead) return;
+            if (_isDead)
+            {
+                _updated = DateTime.Now;
+                return;
+            }
 
-            if ((DateTime.Now - _lastDrinkTime).Hours > drinkInterval)
-            {
-                _thirst--;
-            }
-            if ((DateTime.Now - _lastEatTime).Hours > eatInterval)
-            {
-                _hunger--;
-            }
+            var thirstDifference = (DateTime.Now - _lastDrinkTime).Hours / drinkInterval;
+            _thirst -= thirstDifference < (int)_thirst ? (Thirsty)thirstDifference : _thirst;
+
+            var hungerDifference = (DateTime.Now - _lastEatTime).Hours / eatInterval;
+            _hunger -= hungerDifference < (int)_hunger ? (Hunger)thirstDifference : _hunger;
 
             if (_thirst == Thirsty.Dead || _hunger == Hunger.Dead)
             {

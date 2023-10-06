@@ -1,12 +1,22 @@
-﻿using System;
-
-namespace InnoGotchi
+﻿namespace InnoGotchi
 {
     internal class InnoGotchi
     {
-        static void Main(/*string[] args*/)
+        async static Task Main(string[] args)
         {
-            
+            Pet[] pets = new Pet[100];
+
+            for(var i = 0; i < pets.Length; i++ )
+            {
+                pets[i] = new Pet();
+            }
+
+            Console.WriteLine("begin main");
+
+            Task writeToFile = PetFilesystem.Write(pets, "test.txt");
+
+            Console.WriteLine("end main");
+            await writeToFile;
         }
     }
 

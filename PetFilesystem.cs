@@ -1,22 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InnoGotchi
+﻿namespace InnoGotchi
 {
     internal static class PetFilesystem
     {
-        static void Save(in Pet pet, string filePath)
+        async static public Task Write(Pet[] pets, string filePath)
         {
-            //File.WriteAllText(filePath, pet.ToString());
+            File.Delete(filePath);
+            await Task.Run(() => Append(pets, filePath));
         }
-        static Pet Load(string filePath)
+        async static public Task Append(Pet[] pets, string filePath)
         {
-            string line;
-            line = File.ReadAllText(filePath);
-            return new Pet(line);
+            foreach (var pet in pets)
+            {
+                await File.AppendAllTextAsync(filePath, pet.ToString());
+            }
+        }
+
+        static public Pet[] Load(string filePath)
+        {
+            string[] lines = File.ReadAllLines(filePath);
+            Pet[] pets = new Pet[lines.Length];
+
+            for(var i = 0; i < lines.Length; i++)
+            {
+                pets[i] = new Pet(lines[i]);
+            }
+
+            return pets;
         }
     }
 }
