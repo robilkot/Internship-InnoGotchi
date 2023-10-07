@@ -15,7 +15,7 @@
             }
         }
 
-        static public Pet[] Load(string filePath)
+        static public Pet[] Read(string filePath)
         {
             string[] lines = File.ReadAllLines(filePath);
             Pet[] pets = new Pet[lines.Length];
