@@ -87,11 +87,17 @@ namespace InnoGotchi
                 return;
             }
 
-            var thirstDifference = (DateTime.Now - _lastDrinkTime).Hours / drinkInterval;
-            _thirst -= thirstDifference < (int)_thirst ? (Thirsty)thirstDifference : _thirst;
-
-            var hungerDifference = (DateTime.Now - _lastEatTime).Hours / eatInterval;
-            _hunger -= hungerDifference < (int)_hunger ? (Hunger)thirstDifference : _hunger;
+            // Protects against double decrementations
+            if((DateTime.Now - _updated).TotalHours > drinkInterval)
+            {
+                var thirstDifference = (DateTime.Now - _lastDrinkTime).TotalHours / drinkInterval;
+                _thirst -= (thirstDifference < (int)_thirst ? (Thirsty)thirstDifference : _thirst);
+            }
+            if ((DateTime.Now - _updated).TotalHours > eatInterval)
+            {
+                var hungerDifference = (DateTime.Now - _lastEatTime).TotalHours / eatInterval;
+                _hunger -= (hungerDifference < (int)_hunger ? (Hunger)hungerDifference : _hunger);
+            }
 
             if (_thirst == Thirsty.Dead || _hunger == Hunger.Dead)
             {
@@ -104,6 +110,37 @@ namespace InnoGotchi
 
             _updated = DateTime.Now;
         }
+        public void GiveDrink()
+        {
+            UpdateState();
+
+            if (_isDead)
+            {
+                return;
+            }
+
+            if (_thirst < Thirsty.Full)
+            {
+                _thirst++;
+                _lastDrinkTime = DateTime.Now;
+            }
+        }
+        public void Feed()
+        {
+            UpdateState();
+
+            if (_isDead)
+            {
+                return;
+            }
+
+            if (_hunger < Hunger.Full)
+            {
+                _hunger++;
+                _lastEatTime = DateTime.Now;
+            }
+        }
+
         // Returns age as 1 full real week = 1 in-game year
         public int Age()
         {

@@ -2,16 +2,16 @@
 {
     internal static class PetFilesystem
     {
-        async static public Task Write(Pet[] pets, string filePath)
+        static public void Write(Pet[] pets, string filePath)
         {
             File.Delete(filePath);
-            await Task.Run(() => Append(pets, filePath));
+            Append(pets, filePath);
         }
-        async static public Task Append(Pet[] pets, string filePath)
+        static public void Append(Pet[] pets, string filePath)
         {
             foreach (var pet in pets)
             {
-                await File.AppendAllTextAsync(filePath, pet.ToString());
+                File.AppendAllText(filePath, pet.ToString());
             }
         }
 
