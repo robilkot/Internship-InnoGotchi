@@ -192,12 +192,20 @@ namespace InnoGotchi
 
         public static void ReadFromFile()
         {
-            var pets = PetFilesystem.Read(filePath);
-            _farm.Clear();
-            
-            foreach (var pet in pets)
+            try
             {
-                _farm.AddPet(pet);
+                var pets = PetFilesystem.Read(filePath);
+                _farm.Clear();
+            
+                foreach (var pet in pets)
+                {
+                    _farm.AddPet(pet);
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Error reading file!");
+                Thread.Sleep(1500);
             }
         }
         public static void SaveToFile()
