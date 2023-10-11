@@ -17,7 +17,6 @@ namespace InnoGotchi
         static ConsoleUserInterface()
         {
             ReadFromFile();
-            UpdateState();
         }
 
         private static T ReadProperty<T>() where T : Enum
@@ -41,9 +40,7 @@ namespace InnoGotchi
 
         public static void UpdateState()
         {
-            foreach (Pet pet in _farm._pets) {
-                pet.UpdateState();
-            }
+            _farm.UpdateState();
         }
         public static void Start()
         {
@@ -51,6 +48,7 @@ namespace InnoGotchi
             {
                 Console.Clear();
 
+                UpdateState();
                 ShowFarm();
 
                 Console.WriteLine("Choose the action:");
@@ -90,13 +88,21 @@ namespace InnoGotchi
             Console.WriteLine("Input name of pet to remove");
             string name = Console.ReadLine() ?? "Unnamed";
 
-            var pet = _farm._pets.Find(p => p._name == name);
-            if(pet != null) _farm._pets.Remove(pet);
+            var pet = _farm.Pets.Find(p => p._name == name);
+            if(pet != null) _farm.Pets.Remove(pet);
         }
 
         public static void EditPet()
         {
-            Pet toEdit = SelectPet();
+            Pet toEdit;
+            
+            try
+            {
+                toEdit = SelectPet();
+            }
+            catch (KeyNotFoundException ex) {
+                return;
+            }
 
             while (true)
             {
@@ -132,24 +138,39 @@ namespace InnoGotchi
         public static Pet SelectPet()
         {
             Pet pet;
-
-            Console.WriteLine("Select pet number:");
-
             int petNumber = 0;
-            while (true)
+            
+            if(_farm.Pets.Count > 1)
             {
-                Int32.TryParse(Console.ReadLine() ?? "0", out petNumber);
-                if (petNumber < _farm._pets.Count)
+                Console.WriteLine("Select pet number:");
+
+                while (true)
                 {
-                    break;
+                    Int32.TryParse(Console.ReadLine() ?? "0", out petNumber);
+                    if (petNumber < _farm.Pets.Count)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Number out of range, re-input.");
+                    }
                 }
-                else
+            } else if (_farm.Pets.Count == 1)
+            {
+                petNumber = 0;
+            } else
+            {
+                Console.WriteLine("No pets found in farm. Do you want to create one? (y/n)");
+                switch(Console.ReadKey().KeyChar)
                 {
-                    Console.WriteLine("Number out of range, re-input.");
+                    case 'y':
+                    case 'Y': AddPet(); petNumber = 0; break;
+                    default: throw new KeyNotFoundException();
                 }
             }
 
-            pet = _farm._pets[petNumber];
+            pet = _farm.Pets[petNumber];
             return pet;
         }
         public static void ChangePath()
@@ -182,13 +203,11 @@ namespace InnoGotchi
         public static void SaveToFile()
         {
             UpdateState();
-            PetFilesystem.Write(_farm._pets.ToArray(), filePath);
+            PetFilesystem.Write(_farm.Pets.ToArray(), filePath);
         }
 
         public static void ShowPet(in Pet pet)
         {
-            pet.UpdateState();
-
             if (pet._isDead) Console.Write("(Dead) ");
             Console.WriteLine($"{pet._name}, {pet.Age()} y.o.\n" +
                 $"Body: {pet._body}, Eyes: {pet._eyes}, Mouth: {pet._mouth}, Nose: {pet._nose}\n" +
@@ -198,9 +217,9 @@ namespace InnoGotchi
         public static void ShowFarm()
         {
             Console.WriteLine("Farm:");
-            foreach(var pet in _farm._pets)
+            foreach(var pet in _farm.Pets)
             {
-                Console.Write(_farm._pets.IndexOf(pet) + ". ");
+                Console.Write(_farm.Pets.IndexOf(pet) + ". ");
                 ShowPet(pet);
             }
         }

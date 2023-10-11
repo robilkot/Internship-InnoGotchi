@@ -8,32 +8,29 @@ namespace InnoGotchi
 {
     internal class Farm
     {
-        private int _deadPets = 0;
-        private int _alivePets = 0;
-        private int _avgFeedingPeriod = 0;
-        private int _avgThirstQuenchingPeriod = 0;
-        private int _avgHappinessDaysCount = 0;
-        private int _avgAge = 0;
+        public int DeadPets { private set; get; } = 0;
+        public int AlivePets { private set; get; } = 0;
+        public float AvgHappinessDaysCount { private set; get; } = 0;
+        public float AvgAge { private set; get; } = 0;
 
-        public List<Pet> _pets { get; private set; } = new List<Pet>();
+        public List<Pet> Pets { get; private set; } = new List<Pet>();
 
         public void AddPet(Pet pet)
         {
-            _pets.Add(pet);
+            Pets.Add(pet);
         }
         public void UpdateState()
         {
-            foreach (Pet pet in _pets)
-            {
-                pet.UpdateState();
-            }
+            Parallel.ForEach(Pets, pet => pet.UpdateState());
 
-            _deadPets = _pets.Count(p => p._isDead == true);
-            _alivePets = _pets.Count(p => p._isDead == false);
+            DeadPets = Pets.Count(p => p._isDead == true);
+            AlivePets = Pets.Count(p => p._isDead == false);
+            AvgHappinessDaysCount = (Pets.Count != 0 ? Pets.Sum(pet => pet._happinessDaysCount) / Pets.Count : 0);
+            AvgAge = (Pets.Count != 0 ? Pets.Sum(pet => pet.Age()) / Pets.Count : 0);
         }
         public void Clear()
         {
-            _pets.Clear();
+            Pets.Clear();
             UpdateState();
         }
     }

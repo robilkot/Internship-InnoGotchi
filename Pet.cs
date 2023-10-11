@@ -4,8 +4,8 @@ namespace InnoGotchi
 {
     internal class Pet : IComparable
     {
-        public static readonly int eatInterval = 24;
-        public static readonly int drinkInterval = 24;
+        public static readonly int eatInterval = 12;
+        public static readonly int drinkInterval = 12;
 
         public Body _body { get; set; } = Body.Medium;
         public Eyes _eyes { get; set; } = Eyes.Brown;
@@ -24,7 +24,6 @@ namespace InnoGotchi
         public int _happinessDaysCount { get; private set; } = 0;
         public bool _isDead { get; private set; } = false;
 
-        public Pet() { }
         public Pet(Body body, Eyes eyes, Nose nose, Mouth mouth, string name)
         {
             _body = body;
@@ -88,7 +87,7 @@ namespace InnoGotchi
             }
 
             // Protects against double decrementations
-            if((DateTime.Now - _updated).TotalHours > drinkInterval)
+            if ((DateTime.Now - _updated).TotalHours > drinkInterval)
             {
                 var thirstDifference = (DateTime.Now - _lastDrinkTime).TotalHours / drinkInterval;
                 _thirst -= (thirstDifference < (int)_thirst ? (Thirsty)thirstDifference : _thirst);
@@ -122,8 +121,9 @@ namespace InnoGotchi
             if (_thirst < Thirsty.Full)
             {
                 _thirst++;
-                _lastDrinkTime = DateTime.Now;
             }
+
+            _lastDrinkTime = DateTime.Now;
         }
         public void Feed()
         {
@@ -137,8 +137,9 @@ namespace InnoGotchi
             if (_hunger < Hunger.Full)
             {
                 _hunger++;
-                _lastEatTime = DateTime.Now;
             }
+
+            _lastEatTime = DateTime.Now;
         }
 
         // Returns age as 1 full real week = 1 in-game year
