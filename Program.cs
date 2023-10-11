@@ -2,7 +2,7 @@
 {
     internal class InnoGotchi
     {
-         static void Main(string[] args)
+         static void Main()
         {
             ConsoleUserInterface.Start();
         }

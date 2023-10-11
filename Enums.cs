@@ -38,7 +38,7 @@ namespace InnoGotchi
         Normal,
         Full
     }
-    enum Thirsty
+    enum Thirst
     {
         Dead,
         Thirsty,

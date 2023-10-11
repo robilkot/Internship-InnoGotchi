@@ -23,9 +23,9 @@ namespace InnoGotchi
         {
             Parallel.ForEach(Pets, pet => pet.UpdateState());
 
-            DeadPets = Pets.Count(p => p._isDead == true);
-            AlivePets = Pets.Count(p => p._isDead == false);
-            AvgHappinessDaysCount = (Pets.Count != 0 ? Pets.Sum(pet => pet._happinessDaysCount) / Pets.Count : 0);
+            DeadPets = Pets.Count(p => p.Dead == true);
+            AlivePets = Pets.Count(p => p.Dead == false);
+            AvgHappinessDaysCount = (Pets.Count != 0 ? Pets.Sum(pet => pet.HappinessDaysCount) / Pets.Count : 0);
             AvgAge = (Pets.Count != 0 ? Pets.Sum(pet => pet.Age()) / Pets.Count : 0);
         }
         public void Clear()

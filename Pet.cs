@@ -7,66 +7,66 @@ namespace InnoGotchi
         public static readonly int eatInterval = 12;
         public static readonly int drinkInterval = 12;
 
-        public Body _body { get; set; } = Body.Medium;
-        public Eyes _eyes { get; set; } = Eyes.Brown;
-        public Nose _nose { get; set; } = Nose.Medium;
-        public Mouth _mouth { get; set; } = Mouth.Medium;
-        public string _name { get; set; } = "Unnamed";
+        public Body Body { get; set; } = Body.Medium;
+        public Eyes Eyes { get; set; } = Eyes.Brown;
+        public Nose Nose { get; set; } = Nose.Medium;
+        public Mouth Mouth { get; set; } = Mouth.Medium;
+        public string Name { get; set; } = "Unnamed";
 
-        public readonly DateTime _created = DateTime.Now;
+        public readonly DateTime Created = DateTime.Now;
         private DateTime _updated = DateTime.Now;
 
-        public Hunger _hunger { get; private set; } = Hunger.Full;
-        public DateTime _lastEatTime { get; private set; } = DateTime.Now;
-        public Thirsty _thirst { get; private set; } = Thirsty.Full;
-        public DateTime _lastDrinkTime { get; private set; } = DateTime.Now;
+        public Hunger Hunger { get; private set; } = Hunger.Full;
+        public DateTime LastEatTime { get; private set; } = DateTime.Now;
+        public Thirst Thirst { get; private set; } = Thirst.Full;
+        public DateTime LastDrinkTime { get; private set; } = DateTime.Now;
 
-        public int _happinessDaysCount { get; private set; } = 0;
-        public bool _isDead { get; private set; } = false;
+        public int HappinessDaysCount { get; private set; } = 0;
+        public bool Dead { get; private set; } = false;
 
-        public Pet(Body body, Eyes eyes, Nose nose, Mouth mouth, string name)
+        public Pet(Body Body, Eyes Eyes, Nose Nose, Mouth Mouth, string name)
         {
-            _body = body;
-            _eyes = eyes;
-            _nose = nose;
-            _mouth = mouth;
-            _name = name;
+            this.Body = Body;
+            this.Eyes = Eyes;
+            this.Nose = Nose;
+            this.Mouth = Mouth;
+            this.Name = name;
         }
 
         public Pet(string line)
         {
             string[] fields = line.Split(',');
 
-            _body = (Body)Enum.Parse(typeof(Body), fields[0]);
-            _eyes = (Eyes)Enum.Parse(typeof(Eyes), fields[1]);
-            _nose = (Nose)Enum.Parse(typeof(Nose), fields[2]);
-            _mouth = (Mouth)Enum.Parse(typeof(Mouth), fields[3]);
+            Body = (Body)Enum.Parse(typeof(Body), fields[0]);
+            Eyes = (Eyes)Enum.Parse(typeof(Eyes), fields[1]);
+            Nose = (Nose)Enum.Parse(typeof(Nose), fields[2]);
+            Mouth = (Mouth)Enum.Parse(typeof(Mouth), fields[3]);
 
-            _name = fields[4];
-            _created = DateTime.Parse(fields[5]);
+            Name = fields[4];
+            Created = DateTime.Parse(fields[5]);
             _updated = DateTime.Parse(fields[6]);
 
-            _hunger = (Hunger)Enum.Parse(typeof(Hunger), fields[7]);
-            _lastEatTime = DateTime.Parse(fields[8]);
-            _thirst = (Thirsty)Enum.Parse(typeof(Thirsty), fields[9]);
-            _lastDrinkTime = DateTime.Parse(fields[10]);
+            Hunger = (Hunger)Enum.Parse(typeof(Hunger), fields[7]);
+            LastEatTime = DateTime.Parse(fields[8]);
+            Thirst = (Thirst)Enum.Parse(typeof(Thirst), fields[9]);
+            LastDrinkTime = DateTime.Parse(fields[10]);
 
-            _happinessDaysCount = Int32.Parse(fields[11]);
-            _isDead = Boolean.Parse(fields[12]);
+            HappinessDaysCount = Int32.Parse(fields[11]);
+            Dead = Boolean.Parse(fields[12]);
         }
 
         public override string ToString()
         {
-            StringBuilder pet = new StringBuilder(256);
+            StringBuilder pet = new(256);
 
             object[] fields = new object[]
             {
-                _body, _eyes, _nose, _mouth,
-                _name,
-                _created, _updated,
-                _hunger, _lastEatTime, _thirst, _lastDrinkTime,
-                _happinessDaysCount,
-                _isDead
+                Body, Eyes, Nose, Mouth,
+                Name,
+                Created, _updated,
+                Hunger, LastEatTime, Thirst, LastDrinkTime,
+                HappinessDaysCount,
+                Dead
             };
 
             foreach (var field in fields)
@@ -80,7 +80,7 @@ namespace InnoGotchi
         }
         public void UpdateState()
         {
-            if (_isDead)
+            if (Dead)
             {
                 _updated = DateTime.Now;
                 return;
@@ -89,22 +89,22 @@ namespace InnoGotchi
             // Protects against double decrementations
             if ((DateTime.Now - _updated).TotalHours > drinkInterval)
             {
-                var thirstDifference = (DateTime.Now - _lastDrinkTime).TotalHours / drinkInterval;
-                _thirst -= (thirstDifference < (int)_thirst ? (Thirsty)thirstDifference : _thirst);
+                var thirstDifference = (DateTime.Now - LastDrinkTime).TotalHours / drinkInterval;
+                Thirst -= (thirstDifference < (int)Thirst ? (Thirst)thirstDifference : Thirst);
             }
             if ((DateTime.Now - _updated).TotalHours > eatInterval)
             {
-                var hungerDifference = (DateTime.Now - _lastEatTime).TotalHours / eatInterval;
-                _hunger -= (hungerDifference < (int)_hunger ? (Hunger)hungerDifference : _hunger);
+                var hungerDifference = (DateTime.Now - LastEatTime).TotalHours / eatInterval;
+                Hunger -= (hungerDifference < (int)Hunger ? (Hunger)hungerDifference : Hunger);
             }
 
-            if (_thirst == Thirsty.Dead || _hunger == Hunger.Dead)
+            if (Thirst == Thirst.Dead || Hunger == Hunger.Dead)
             {
-                _isDead = true;
+                Dead = true;
             }
-            else if (_thirst >= Thirsty.Normal && _hunger >= Hunger.Normal)
+            else if (Thirst >= Thirst.Normal && Hunger >= Hunger.Normal)
             {
-                _happinessDaysCount += (DateTime.Now - _updated).Days;
+                HappinessDaysCount += (DateTime.Now - _updated).Days;
             }
 
             _updated = DateTime.Now;
@@ -113,49 +113,49 @@ namespace InnoGotchi
         {
             UpdateState();
 
-            if (_isDead)
+            if (Dead)
             {
                 return;
             }
 
-            if (_thirst < Thirsty.Full)
+            if (Thirst < Thirst.Full)
             {
-                _thirst++;
+                Thirst++;
             }
 
-            _lastDrinkTime = DateTime.Now;
+            LastDrinkTime = DateTime.Now;
         }
         public void Feed()
         {
             UpdateState();
 
-            if (_isDead)
+            if (Dead)
             {
                 return;
             }
 
-            if (_hunger < Hunger.Full)
+            if (Hunger < Hunger.Full)
             {
-                _hunger++;
+                Hunger++;
             }
 
-            _lastEatTime = DateTime.Now;
+            LastEatTime = DateTime.Now;
         }
 
         // Returns age as 1 full real week = 1 in-game year
         public int Age()
         {
-            return (DateTime.Now - _created).Days / 7;
+            return (DateTime.Now - Created).Days / 7;
         }
         public int CompareTo(object? obj)
         {
             if (obj is Pet pet)
             {
-                if (this._happinessDaysCount < pet._happinessDaysCount)
+                if (this.HappinessDaysCount < pet.HappinessDaysCount)
                 {
                     return -1;
                 }
-                else if (this._happinessDaysCount > pet._happinessDaysCount)
+                else if (this.HappinessDaysCount > pet.HappinessDaysCount)
                 {
                     return 1;
                 }
