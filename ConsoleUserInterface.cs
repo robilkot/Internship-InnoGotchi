@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace InnoGotchi
+﻿namespace InnoGotchi
 {
     internal static class ConsoleUserInterface
     {
@@ -41,9 +32,9 @@ namespace InnoGotchi
         {
             s_farm.UpdateState();
         }
-        public static void Start()
+        public static async Task Start()
         {
-            while(true)
+            while (true)
             {
                 Console.Clear();
 
@@ -59,13 +50,13 @@ namespace InnoGotchi
 
                 var action = Int32.Parse(Console.ReadLine() ?? "2");
 
-                switch(action)
+                switch (action)
                 {
                     case 1: AddPet(); break;
                     case 2: RemovePet(); break;
                     case 3: EditPet(); break;
-                    case 4: ChangePath(); break;
-                    case 5: SaveToFile(); return;
+                    case 4: await ChangePath(); break;
+                    case 5: await SaveToFile(); return;
                 }
             }
         }
@@ -87,18 +78,19 @@ namespace InnoGotchi
             string name = Console.ReadLine() ?? "Unnamed";
 
             var pet = s_farm.Pets.Find(p => p.Name == name);
-            if(pet != null) s_farm.Pets.Remove(pet);
+            if (pet != null) s_farm.Pets.Remove(pet);
         }
 
         public static void EditPet()
         {
             Pet toEdit;
-            
+
             try
             {
                 toEdit = SelectPet();
             }
-            catch (KeyNotFoundException) {
+            catch (KeyNotFoundException)
+            {
                 return;
             }
 
@@ -136,8 +128,8 @@ namespace InnoGotchi
         {
             Pet pet;
             int petNumber;
-            
-            if(s_farm.Pets.Count > 1)
+
+            if (s_farm.Pets.Count > 1)
             {
                 Console.WriteLine("Select pet number:");
 
@@ -153,13 +145,15 @@ namespace InnoGotchi
                         Console.WriteLine("Number out of range, re-input.");
                     }
                 }
-            } else if (s_farm.Pets.Count == 1)
+            }
+            else if (s_farm.Pets.Count == 1)
             {
                 petNumber = 0;
-            } else
+            }
+            else
             {
                 Console.WriteLine("No pets found in farm. Do you want to create one? (y/n)");
-                switch(Console.ReadKey().KeyChar)
+                switch (Console.ReadKey().KeyChar)
                 {
                     case 'y':
                     case 'Y': AddPet(); petNumber = 0; break;
@@ -170,20 +164,20 @@ namespace InnoGotchi
             pet = s_farm.Pets[petNumber];
             return pet;
         }
-        public static void ChangePath()
+        public static async Task ChangePath()
         {
             Console.Clear();
 
             Console.WriteLine("Enter new path:");
             s_filePath = Console.ReadLine() ?? s_filePath;
 
-            if(File.Exists(s_filePath))
+            if (File.Exists(s_filePath))
             {
                 ReadFromFile();
             }
             else
             {
-                SaveToFile();
+                await SaveToFile();
             }
         }
 
@@ -193,27 +187,31 @@ namespace InnoGotchi
             {
                 var pets = PetFilesystem.Read(s_filePath);
                 s_farm.Clear();
-            
+
                 foreach (var pet in pets)
                 {
                     s_farm.AddPet(pet);
                 }
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 Console.WriteLine("Error reading file!");
                 Thread.Sleep(1500);
             }
         }
-        public static void SaveToFile()
+        public static async Task SaveToFile()
         {
             UpdateState();
-            PetFilesystem.Write(s_farm.Pets.ToArray(), s_filePath);
+            var task = PetFilesystem.Write(s_farm.Pets.ToArray(), s_filePath);
+            await task;
         }
 
         public static void ShowPet(in Pet pet)
         {
-            if (pet.Dead) Console.Write("(Dead) ");
+            if (pet.Dead)
+                Console.Write("(Dead) ");
+
             Console.WriteLine($"{pet.Name}, {pet.Age()} y.o.\n" +
                 $"Body: {pet.Body}, Eyes: {pet.Eyes}, Mouth: {pet.Mouth}, Nose: {pet.Nose}\n" +
                 $"Last eat time: {pet.LastEatTime}, Last drink time: {pet.LastDrinkTime}\n" +
@@ -222,7 +220,7 @@ namespace InnoGotchi
         public static void ShowFarm()
         {
             Console.WriteLine("Farm:");
-            foreach(var pet in s_farm.Pets)
+            foreach (var pet in s_farm.Pets)
             {
                 Console.Write(s_farm.Pets.IndexOf(pet) + ". ");
                 ShowPet(pet);

@@ -1,29 +1,24 @@
-﻿namespace InnoGotchi
+﻿using System.Text.Json;
+
+namespace InnoGotchi
 {
     internal static class PetFilesystem
     {
-        static public void Write(Pet[] pets, string filePath)
+        static public async Task Write(Pet[] pets, string fileName)
         {
-            File.Delete(filePath);
-            Append(pets, filePath);
-        }
-        static public void Append(Pet[] pets, string filePath)
-        {
-            foreach (var pet in pets)
-            {
-                File.AppendAllText(filePath, pet.ToString());
-            }
+            // Зачем using FileStream ... ?
+            File.WriteAllText(fileName, string.Empty);
+
+            FileStream createStream = File.OpenWrite(fileName);
+            await JsonSerializer.SerializeAsync(createStream, pets);
+            await createStream.DisposeAsync();
         }
 
-        static public Pet[] Read(string filePath)
+        static public Pet[] Read(string fileName)
         {
-            string[] lines = File.ReadAllLines(filePath);
-            Pet[] pets = new Pet[lines.Length];
-
-            for(var i = 0; i < lines.Length; i++)
-            {
-                pets[i] = new Pet(lines[i]);
-            }
+            FileStream createStream = File.OpenRead(fileName);
+            Pet[] pets = JsonSerializer.Deserialize(createStream, typeof(Pet[])) as Pet[] ?? Array.Empty<Pet>();
+            createStream.Dispose();
 
             return pets;
         }

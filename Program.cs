@@ -2,9 +2,9 @@
 {
     internal class InnoGotchi
     {
-         static void Main()
+        static async Task Main()
         {
-            ConsoleUserInterface.Start();
+            await ConsoleUserInterface.Start();
         }
     }
 }

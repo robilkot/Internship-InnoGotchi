@@ -2,6 +2,7 @@
 
 namespace InnoGotchi
 {
+    [Serializable]
     internal class Pet : IComparable
     {
         public static readonly int eatInterval = 12;
@@ -51,8 +52,12 @@ namespace InnoGotchi
             Thirst = (Thirst)Enum.Parse(typeof(Thirst), fields[9]);
             LastDrinkTime = DateTime.Parse(fields[10]);
 
-            HappinessDaysCount = Int32.Parse(fields[11]);
-            Dead = Boolean.Parse(fields[12]);
+            HappinessDaysCount = int.Parse(fields[11]);
+            Dead = bool.Parse(fields[12]);
+        }
+
+        public Pet()
+        {
         }
 
         public override string ToString()

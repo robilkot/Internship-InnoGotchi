@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace InnoGotchi
+﻿namespace InnoGotchi
 {
+    [Serializable]
     internal class Farm
     {
         public int DeadPets { private set; get; } = 0;
