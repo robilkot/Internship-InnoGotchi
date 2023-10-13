@@ -1,4 +1,6 @@
-﻿namespace InnoGotchi
+﻿using InnoGotchi.view;
+
+namespace InnoGotchi
 {
     internal class InnoGotchi
     {
