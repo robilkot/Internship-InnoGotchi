@@ -1,38 +1,38 @@
 ﻿namespace InnoGotchi
 {
-    enum Body
+    public enum Body
     {
         Thin,
         Medium,
         Thick
     }
-    enum Eyes
+    public enum Eyes
     {
         Brown,
         Blue,
         Green,
         Red
     }
-    enum Nose
+    public enum Nose
     {
         Small,
         Medium,
         Large
     }
-    enum Mouth
+    public enum Mouth
     {
         Small,
         Medium,
         Large
     }
-    enum Hunger
+    public enum Hunger
     {
         Dead,
         Hunger,
         Normal,
         Full
     }
-    enum Thirst
+    public enum Thirst
     {
         Dead,
         Thirsty,

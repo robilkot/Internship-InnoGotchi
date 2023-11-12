@@ -5,28 +5,12 @@ namespace InnoGotchi.view
     internal static class ConsoleUserInterface
     {
         private static readonly Farm s_farm = new();
-        private static string s_petFilePath = "pets.txt";
-        private static readonly string s_configFilePath = "config.txt";
+        private static IProgressSaver? s_progressSaver = null;
 
         static ConsoleUserInterface()
         {
-            try
-            {
-                s_petFilePath = File.ReadAllText(s_configFilePath);
-            }
-            catch (FileNotFoundException)
-            {
-                File.WriteAllText(s_configFilePath, s_petFilePath);
-                DisplayError("Couldn't find config file. Creating new one.");
-            }
-            catch
-            {
-                DisplayError("Couldn't read config file.");
-            }
-            finally
-            {
-                ReadFromFile();
-            }
+            s_progressSaver = DBProgressSaver.GetInstance();
+            ReadProgress();
         }
 
         private static void DisplayError(string message)
@@ -63,8 +47,7 @@ namespace InnoGotchi.view
             Console.WriteLine("1. Add new pet");
             Console.WriteLine("2. Remove pet");
             Console.WriteLine("3. Edit pet");
-            Console.WriteLine("4. Change path to file with pets");
-            Console.WriteLine("5. Save and exit\n");
+            Console.WriteLine("4. Save and exit\n");
         }
         public static async Task Start()
         {
@@ -82,8 +65,7 @@ namespace InnoGotchi.view
                     case 1: AddPet(); break;
                     case 2: RemovePet(); break;
                     case 3: EditPet(); break;
-                    case 4: await ChangePetsFilePath(); break;
-                    case 5: await SaveToFile(); return;
+                    case 4: await SaveProgress(); return;
                     default: Console.WriteLine("Invalid number. Re-input"); break;
                 }
             }
@@ -97,18 +79,13 @@ namespace InnoGotchi.view
             string name = ReadName();
 
             Pet pet = new(body, eyes, nose, mouth, name);
-            s_farm.AddPet(pet);
+            s_farm.Pets.Add(pet);
         }
         public static void RemovePet()
         {
-            //string name = ReadName();
-            //var pet = s_farm.Pets.Find(p => p.Name == name);
-            //if (pet != null) s_farm.Pets.Remove(pet);
-            Pet toEdit;
-
             try
             {
-                toEdit = SelectPet();
+                Pet toEdit = SelectPet();
                 s_farm.Pets.Remove(toEdit);
             }
             catch (KeyNotFoundException)
@@ -202,53 +179,29 @@ namespace InnoGotchi.view
             pet = s_farm.Pets[petNumber];
             return pet;
         }
-        public static async Task ChangePetsFilePath()
-        {
-            Console.Clear();
 
-            Console.WriteLine("Enter new path:");
-            s_petFilePath = Console.ReadLine() ?? s_petFilePath;
-
-            try
-            {
-                File.WriteAllText(s_configFilePath, s_petFilePath);
-            }
-            catch
-            {
-                DisplayError("Couldn't save path to pets file.");
-            }
-
-            if (File.Exists(s_petFilePath))
-            {
-                ReadFromFile();
-            }
-            else
-            {
-                await SaveToFile();
-            }
-        }
-
-        public static void ReadFromFile()
+        public static void ReadProgress()
         {
             try
             {
-                var pets = PetFilesystem.Read(s_petFilePath);
-                s_farm.Clear();
-
-                foreach (var pet in pets)
-                {
-                    s_farm.AddPet(pet);
-                }
+                s_farm.Pets = s_progressSaver?.Read() ?? new();
             }
             catch (Exception e)
             {
                 DisplayError(e.Message);
             }
         }
-        public static async Task SaveToFile()
+        public static async Task SaveProgress()
         {
             UpdateState();
-            await PetFilesystem.Write(s_farm.Pets.ToArray(), s_petFilePath);
+            try
+            {
+                await s_progressSaver?.Write(s_farm.Pets);
+            }
+            catch (Exception e)
+            {
+                DisplayError(e.Message);
+            }
         }
 
         public static void ShowPet(Pet pet)

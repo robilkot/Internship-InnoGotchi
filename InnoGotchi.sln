@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InnoGotchi", "InnoGotchi.csproj", "{59F84E11-B701-410B-B0B9-C9F8677B9B5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InnoGotchi", "InnoGotchi.csproj", "{59F84E11-B701-410B-B0B9-C9F8677B9B5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WindowUI", "..\InnoGotchi_WindowUI\WindowUI.csproj", "{C7A775C2-4F4D-4AD8-909E-E56E09B3061B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{59F84E11-B701-410B-B0B9-C9F8677B9B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59F84E11-B701-410B-B0B9-C9F8677B9B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59F84E11-B701-410B-B0B9-C9F8677B9B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7A775C2-4F4D-4AD8-909E-E56E09B3061B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7A775C2-4F4D-4AD8-909E-E56E09B3061B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7A775C2-4F4D-4AD8-909E-E56E09B3061B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7A775C2-4F4D-4AD8-909E-E56E09B3061B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

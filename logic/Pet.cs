@@ -1,22 +1,30 @@
-﻿using InnoGotchi.view;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace InnoGotchi.logic
 {
     [Serializable]
-    internal class Pet : IComparable
+    [Table("Pets")]
+    public class Pet : IComparable
     {
-        public static readonly int EatInterval = 12;
-        public static readonly int DrinkInterval = 12;
-        public static readonly string DefaultName = "Unnamed";
-
+        public static readonly int EatInterval = 3600;
+        public static readonly int DrinkInterval = 3600;
+        public static readonly string DefaultName = "Unnamed Pet";
+        [Column]
+        public Guid Id { get; init; } = Guid.NewGuid();
+        [Column]
         public Body Body { get; set; } = Body.Medium;
+        [Column]
         public Eyes Eyes { get; set; } = Eyes.Brown;
+        [Column]
         public Nose Nose { get; set; } = Nose.Medium;
+        [Column]
         public Mouth Mouth { get; set; } = Mouth.Medium;
+        [Column]
         public string Name { get; set; } = DefaultName;
 
         private DateTime _created = DateTime.Now;
+        [Column]
         public DateTime Created
         {
             get => _created;
@@ -24,6 +32,7 @@ namespace InnoGotchi.logic
         }
 
         private DateTime _updated = DateTime.Now;
+        [Column]
         public DateTime Updated
         {
             get => _updated;
@@ -31,6 +40,7 @@ namespace InnoGotchi.logic
         }
 
         private DateTime _lastEatTime = DateTime.Now;
+        [Column]
         public DateTime LastEatTime
         {
             get => _lastEatTime;
@@ -38,6 +48,7 @@ namespace InnoGotchi.logic
         }
 
         private DateTime _lastDrinkTime = DateTime.Now;
+        [Column]
         public DateTime LastDrinkTime
         {
             get => _lastDrinkTime;
@@ -45,6 +56,7 @@ namespace InnoGotchi.logic
         }
 
         private Hunger _hunger = Hunger.Full;
+        [Column]
         public Hunger Hunger
         {
             get => _hunger;
@@ -52,6 +64,7 @@ namespace InnoGotchi.logic
         }
 
         private Thirst _thirst = Thirst.Full;
+        [Column]
         public Thirst Thirst
         {
             get => _thirst;
@@ -59,6 +72,7 @@ namespace InnoGotchi.logic
         }
 
         private int _happinessDaysCount = 0;
+        [Column]
         public int HappinessDaysCount
         {
             get => _happinessDaysCount;
@@ -75,12 +89,14 @@ namespace InnoGotchi.logic
         }
 
         private bool _dead = false;
+        [Column]
         public bool Dead
         {
             get => _dead;
             init => _dead = value;
         }
 
+        public Pet() { }
         public Pet(Body body, Eyes eyes, Nose nose, Mouth mouth, string name)
         {
             Body = body;
@@ -98,16 +114,20 @@ namespace InnoGotchi.logic
                 return;
             }
 
+            bool stateChanged = false;
+
             // Protects against double decrementations
-            if ((DateTime.Now - _updated).TotalHours > DrinkInterval)
+            if ((DateTime.Now - _updated).TotalSeconds > DrinkInterval)
             {
-                var thirstDifference = (DateTime.Now - LastDrinkTime).TotalHours / DrinkInterval;
+                var thirstDifference = (DateTime.Now - LastDrinkTime).TotalSeconds / DrinkInterval;
                 _thirst -= thirstDifference < (int)Thirst ? (Thirst)thirstDifference : Thirst;
+                stateChanged = true;
             }
-            if ((DateTime.Now - _updated).TotalHours > EatInterval)
+            if ((DateTime.Now - _updated).TotalSeconds > EatInterval)
             {
-                var hungerDifference = (DateTime.Now - LastEatTime).TotalHours / EatInterval;
+                var hungerDifference = (DateTime.Now - LastEatTime).TotalSeconds / EatInterval;
                 _hunger -= hungerDifference < (int)Hunger ? (Hunger)hungerDifference : Hunger;
+                stateChanged = true;
             }
 
             if (Thirst == Thirst.Dead || Hunger == Hunger.Dead)
@@ -119,7 +139,10 @@ namespace InnoGotchi.logic
                 _happinessDaysCount += (DateTime.Now - _updated).Days;
             }
 
-            _updated = DateTime.Now;
+            if (stateChanged)
+            {
+                _updated = DateTime.Now;
+            }
         }
         public void GiveDrink()
         {
@@ -174,7 +197,7 @@ namespace InnoGotchi.logic
             str.Append("\tLast meal:\t"); str.Append(LastEatTime);
             str.Append("\nThirst: "); str.Append(Thirst.ToString());
             str.Append("\tLast drink:\t"); str.Append(LastDrinkTime);
-            
+
             str.Append("\nHappiness days: "); str.Append(HappinessDaysCount);
 
             return str.ToString();
