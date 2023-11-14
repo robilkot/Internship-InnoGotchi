@@ -35,5 +35,10 @@ namespace InnoGotchi.logic
 
             return pets;
         }
+
+        public void Delete(Pet pet)
+        {
+            return;
+        }
     }
 }

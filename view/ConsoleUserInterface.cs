@@ -85,8 +85,9 @@ namespace InnoGotchi.view
         {
             try
             {
-                Pet toEdit = SelectPet();
-                s_farm.Pets.Remove(toEdit);
+                Pet toRemove = SelectPet();
+                s_farm.Pets.Remove(toRemove);
+                s_progressSaver?.Delete(toRemove);
             }
             catch (KeyNotFoundException)
             {
@@ -141,7 +142,6 @@ namespace InnoGotchi.view
         }
         public static Pet SelectPet()
         {
-            Pet pet;
             int petNumber;
 
             if (s_farm.Pets.Count > 1)
@@ -176,8 +176,7 @@ namespace InnoGotchi.view
                 }
             }
 
-            pet = s_farm.Pets[petNumber];
-            return pet;
+            return s_farm.Pets[petNumber];
         }
 
         public static void ReadProgress()

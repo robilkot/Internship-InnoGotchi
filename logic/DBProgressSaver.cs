@@ -54,48 +54,53 @@ namespace InnoGotchi.logic
             {
                 connection.Open();
 
-                // Should be update but suitable in this case
-                using (var command = new SqlCommand("TRUNCATE TABLE pets", connection))
-                {
-                    command.ExecuteNonQuery();
-                }
-
                 foreach (var pet in pets)
                 {
                     string commandText =
-                        //$"IF EXISTS (SELECT 1 FROM pets WHERE Id = '{pet.Id}') " +
-                        //"UPDATE pets ";
+                        "IF EXISTS (SELECT 1 FROM pets WHERE Id = @guid) " +
+                        "BEGIN " +
+
+                        "UPDATE pets " +
+                        "SET Name = @name, Mouth = @mouth, Nose = @nose, Eyes = @eyes, Body = @body, " +
+                        "Created = @created, Updated = @updated, " +
+                        "LastEatTime = @lastEatTime, LastDrinkTime = @lastDrinkTime, " +
+                        "Thirst = @thirst, Hunger = @hunger, HappinessDaysCount = @happinessDaysCount, Dead = @dead " +
+                        "WHERE Id = @guid " +
+
+                        "END ELSE BEGIN " +
+
                         "INSERT INTO pets " +
                         "(Id, Name, Mouth, Nose, Eyes, Body, " +
                         "Created, Updated, LastEatTime, LastDrinkTime, Thirst, Hunger, HappinessDaysCount, Dead) " +
                         "VALUES " +
                         "(@guid, @name, @mouth, @nose, @eyes, @body, " +
-                        "@created, @updated, @lastEatTime, @lastDrinkTime, @thirst, @hunger, @happinessDaysCount, @dead)";
+                        "@created, @updated, @lastEatTime, @lastDrinkTime, @thirst, @hunger, @happinessDaysCount, @dead)" +
+                        "END";
 
-                    using (var command = new SqlCommand())
+                    var command = new SqlCommand()
                     {
-                        command.Connection = connection;
-                        command.CommandText = commandText;
+                        Connection = connection,
+                        CommandText = commandText
+                    };
 
-                        command.Parameters.AddWithValue("@guid", pet.Id);
-                        command.Parameters.AddWithValue("@name", pet.Name);
-                        command.Parameters.AddWithValue("@mouth", pet.Mouth);
-                        command.Parameters.AddWithValue("@nose", pet.Nose);
-                        command.Parameters.AddWithValue("@eyes", pet.Eyes);
-                        command.Parameters.AddWithValue("@body", pet.Body);
+                    command.Parameters.AddWithValue("@guid", pet.Id);
+                    command.Parameters.AddWithValue("@name", pet.Name);
+                    command.Parameters.AddWithValue("@mouth", pet.Mouth);
+                    command.Parameters.AddWithValue("@nose", pet.Nose);
+                    command.Parameters.AddWithValue("@eyes", pet.Eyes);
+                    command.Parameters.AddWithValue("@body", pet.Body);
 
-                        command.Parameters.AddWithValue("@created", pet.Created);
-                        command.Parameters.AddWithValue("@updated", pet.Updated);
-                        command.Parameters.AddWithValue("@lastEatTime", pet.LastEatTime);
-                        command.Parameters.AddWithValue("@lastDrinkTime", pet.LastDrinkTime);
+                    command.Parameters.AddWithValue("@created", pet.Created);
+                    command.Parameters.AddWithValue("@updated", pet.Updated);
+                    command.Parameters.AddWithValue("@lastEatTime", pet.LastEatTime);
+                    command.Parameters.AddWithValue("@lastDrinkTime", pet.LastDrinkTime);
 
-                        command.Parameters.AddWithValue("@thirst", pet.Thirst);
-                        command.Parameters.AddWithValue("@hunger", pet.Hunger);
-                        command.Parameters.AddWithValue("@happinessDaysCount", pet.HappinessDaysCount);
-                        command.Parameters.AddWithValue("@dead", pet.Dead);
+                    command.Parameters.AddWithValue("@thirst", pet.Thirst);
+                    command.Parameters.AddWithValue("@hunger", pet.Hunger);
+                    command.Parameters.AddWithValue("@happinessDaysCount", pet.HappinessDaysCount);
+                    command.Parameters.AddWithValue("@dead", pet.Dead);
 
-                        command.ExecuteNonQuery();
-                    }
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -147,6 +152,19 @@ namespace InnoGotchi.logic
             }
 
             return pets;
+        }
+
+        public void Delete(Pet pet)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                SqlCommand command = new("DELETE FROM pets WHERE Id = @id", connection);
+                command.Parameters.AddWithValue("@id", pet.Id);
+
+                command.ExecuteNonQuery();
+            }
         }
     }
 }
