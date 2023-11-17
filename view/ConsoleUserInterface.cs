@@ -1,4 +1,6 @@
-﻿using InnoGotchi.logic;
+﻿using InnoGotchi.interfaces;
+using InnoGotchi.logic;
+using InnoGotchi.progresssaver;
 
 namespace InnoGotchi.view
 {

@@ -1,4 +1,6 @@
-﻿namespace InnoGotchi.logic
+﻿using InnoGotchi.logic;
+
+namespace InnoGotchi.interfaces
 {
     public interface IProgressSaver
     {

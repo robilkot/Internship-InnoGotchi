@@ -1,4 +1,6 @@
-﻿using InnoGotchi.view;
+﻿using InnoGotchi.sqlserver;
+using InnoGotchi.logic;
+using InnoGotchi.view;
 
 namespace InnoGotchi
 {

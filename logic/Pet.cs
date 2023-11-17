@@ -1,30 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+﻿using System.Text;
 
 namespace InnoGotchi.logic
 {
-    [Serializable]
-    [Table("Pets")]
     public class Pet : IComparable
     {
         public static readonly int EatInterval = 3600;
         public static readonly int DrinkInterval = 3600;
         public static readonly string DefaultName = "Unnamed Pet";
-        [Column]
         public Guid Id { get; init; } = Guid.NewGuid();
-        [Column]
         public Body Body { get; set; } = Body.Medium;
-        [Column]
         public Eyes Eyes { get; set; } = Eyes.Brown;
-        [Column]
         public Nose Nose { get; set; } = Nose.Medium;
-        [Column]
         public Mouth Mouth { get; set; } = Mouth.Medium;
-        [Column]
         public string Name { get; set; } = DefaultName;
 
         private DateTime _created = DateTime.Now;
-        [Column]
         public DateTime Created
         {
             get => _created;
@@ -32,7 +22,6 @@ namespace InnoGotchi.logic
         }
 
         private DateTime _updated = DateTime.Now;
-        [Column]
         public DateTime Updated
         {
             get => _updated;
@@ -40,7 +29,6 @@ namespace InnoGotchi.logic
         }
 
         private DateTime _lastEatTime = DateTime.Now;
-        [Column]
         public DateTime LastEatTime
         {
             get => _lastEatTime;
@@ -48,7 +36,6 @@ namespace InnoGotchi.logic
         }
 
         private DateTime _lastDrinkTime = DateTime.Now;
-        [Column]
         public DateTime LastDrinkTime
         {
             get => _lastDrinkTime;
@@ -56,7 +43,6 @@ namespace InnoGotchi.logic
         }
 
         private Hunger _hunger = Hunger.Full;
-        [Column]
         public Hunger Hunger
         {
             get => _hunger;
@@ -64,7 +50,6 @@ namespace InnoGotchi.logic
         }
 
         private Thirst _thirst = Thirst.Full;
-        [Column]
         public Thirst Thirst
         {
             get => _thirst;
@@ -72,7 +57,6 @@ namespace InnoGotchi.logic
         }
 
         private int _happinessDaysCount = 0;
-        [Column]
         public int HappinessDaysCount
         {
             get => _happinessDaysCount;
@@ -89,7 +73,6 @@ namespace InnoGotchi.logic
         }
 
         private bool _dead = false;
-        [Column]
         public bool Dead
         {
             get => _dead;

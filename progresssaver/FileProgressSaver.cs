@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
+using InnoGotchi.interfaces;
+using InnoGotchi.logic;
 
-namespace InnoGotchi.logic
+namespace InnoGotchi.progresssaver
 {
     public class FileProgressSaver : IProgressSaver
     {
